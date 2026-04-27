@@ -1,0 +1,55 @@
+-- ===========================================================================
+-- Archivo  : rep_classic.prm
+-- Proceso  : REPLICAT clásico (Classic Apply)
+-- Propósito: Aplica los cambios recibidos del trail remoto en la base de datos
+--            destino de forma serial (un hilo). Adecuado para volúmenes bajos
+--            o cuando la ordenación transaccional es crítica.
+-- Uso      : ADD REPLICAT REPTRG, EXTTRAIL ./dirdat/rt
+--          : ADD CHECKPOINTTABLE gg_apply.gg_chkpt
+-- ===========================================================================
+
+-- ─── Identificación del proceso ───────────────────────────────────────────
+REPLICAT REPTRG
+
+-- ─── Credenciales de conexión al destino ─────────────────────────────────
+USERIDALIAS gg_tgt_alias DOMAIN OracleGoldenGate
+
+-- ─── Tabla de checkpoint ─────────────────────────────────────────────────
+-- Garantiza reinicio idempotente tras una caída
+CHECKPOINTTABLE gg_apply.gg_chkpt
+
+-- ─── Asumeprimary key – para tablas sin PK ───────────────────────────────
+-- ASSUMETARGETDEFS  ← usar cuando origen y destino tienen estructuras idénticas
+ASSUMETARGETDEFS
+
+-- ─── Mapeo de tablas (origen → destino) ───────────────────────────────────
+-- Si los nombres de schema/tabla son iguales en origen y destino, se puede
+-- usar MAP y TARGET con la misma ruta.
+MAP APP_OWNER.ORDERS,       TARGET APP_OWNER.ORDERS;
+MAP APP_OWNER.ORDER_ITEMS,  TARGET APP_OWNER.ORDER_ITEMS;
+MAP APP_OWNER.CUSTOMERS,    TARGET APP_OWNER.CUSTOMERS;
+MAP APP_OWNER.PRODUCTS,     TARGET APP_OWNER.PRODUCTS;
+MAP APP_OWNER.INVENTORY,    TARGET APP_OWNER.INVENTORY;
+
+-- ─── Ejemplo de mapeo con transformación de columnas ──────────────────────
+-- MAP APP_OWNER.ORDERS, TARGET DWH_OWNER.FACT_ORDERS,
+--     COLMAP (
+--         ORDER_ID        = ORDER_ID,
+--         CUSTOMER_ID     = CUSTOMER_ID,
+--         TOTAL_AMOUNT    = AMOUNT * 1.16,   -- IVA incluido
+--         LOAD_DATE       = @DATE('YYYY-MM-DD','JTS', TIMESTAMP)
+--     );
+
+-- ─── Manejo de errores y conflictos ───────────────────────────────────────
+-- Ignorar errores de "registro no encontrado" en DELETE (idempotencia)
+REPERROR (1403, DISCARD)
+REPERROR (DEFAULT, ABEND)
+DISCARDFILE ./dirrpt/reptrg.dsc, APPEND, MEGABYTES 500
+
+-- ─── Parámetros de aplicación ─────────────────────────────────────────────
+-- Tamaño del lote de transacciones antes del COMMIT
+GROUPTRANSOPS 1000
+
+-- ─── Estadísticas periódicas en el reporte ────────────────────────────────
+REPORTCOUNT EVERY 30 MINUTES, RATE
+REPORTROLLOVER AT 00:00

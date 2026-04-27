@@ -1,0 +1,56 @@
+-- ===========================================================================
+-- Archivo  : ext_classic.prm
+-- Proceso  : EXTRACT clásico (Classic Capture)
+-- Propósito: Captura de cambios DML/DDL en la base de datos fuente mediante
+--            lectura directa de redo logs (no requiere Logminer Capture).
+-- Uso      : ADD EXTRACT EXTSRC, SOURCEISTABLE  ← para initial load
+--          : ADD EXTRACT EXTSRC, TRANLOG, BEGIN NOW  ← para CDC
+-- ===========================================================================
+
+-- ─── Identificación del proceso ───────────────────────────────────────────
+EXTRACT EXTSRC
+
+-- ─── Credenciales de conexión ─────────────────────────────────────────────
+-- Preferir un wallet de Oracle en vez de credenciales en texto plano.
+-- Configurar con: ENCRYPT PASSWORD y almacenar en $GG_HOME/CREDENTIALSTORE
+USERIDALIAS gg_src_alias DOMAIN OracleGoldenGate
+-- Si no usa wallet:
+-- USERID gg_owner@ORCL_SRC, PASSWORD GG_Owner#2024
+
+-- ─── Trail file de salida (local) ─────────────────────────────────────────
+-- Prefijo de 2 caracteres; GoldenGate añade la secuencia automáticamente.
+EXTTRAIL ./dirdat/lt
+
+-- ─── Tablas a capturar ────────────────────────────────────────────────────
+-- Formato: SCHEMA.TABLA  (se puede usar wildcard *)
+TABLE APP_OWNER.ORDERS;
+TABLE APP_OWNER.ORDER_ITEMS;
+TABLE APP_OWNER.CUSTOMERS;
+TABLE APP_OWNER.PRODUCTS;
+TABLE APP_OWNER.INVENTORY;
+
+-- ─── Parámetros de rendimiento ────────────────────────────────────────────
+-- Tamaño del buffer de memoria para el Extract (MB)
+CACHEMGR CACHESIZE 1024MB
+
+-- Número máximo de transacciones abiertas simultáneamente en memoria
+TRANLOGOPTIONS BUFSIZE 128000
+
+-- Incluir metadatos de columna en el trail (recomendado para Replicat integrado)
+LOGALLSUPCOLS
+
+-- ─── Manejo de DDL ────────────────────────────────────────────────────────
+-- Capturar operaciones DDL (CREATE, ALTER, DROP) sobre las tablas objetivo.
+-- Descomentar si se requiere replicación de DDL.
+-- DDL INCLUDE MAPPED
+
+-- ─── Control de transacciones largas ──────────────────────────────────────
+-- Registrar advertencia si una transacción supera 30 minutos
+WARNLONGTRANS 30MINUTES, CHECKINTERVAL 10MINUTES
+
+-- ─── Gestión de errores ───────────────────────────────────────────────────
+REPERROR (DEFAULT, ABEND)
+
+-- ─── Heartbeat (monitoreo de lag) ─────────────────────────────────────────
+-- Requiere: ADD HEARTBEATTABLE (ejecutar desde GGSCI)
+HEARTBEATTABLE APP_OWNER.GGS_HEARTBEAT
