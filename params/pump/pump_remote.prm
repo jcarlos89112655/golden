@@ -1,0 +1,40 @@
+-- ===========================================================================
+-- Archivo  : pump_remote.prm
+-- Proceso  : DATA PUMP
+-- Propósito: Leer los trail files locales del Extract y enviarlos al servidor
+--            GoldenGate remoto (destino). El Pump actúa como proxy de red y
+--            permite reintentos sin afectar al Extract.
+-- Uso      : ADD EXTRACT PUMPSRC, EXTTRAILSOURCE ./dirdat/lt
+--          : ADD RMTTRAIL ./dirdat/rt, EXTRACT PUMPSRC, MEGABYTES 500
+-- ===========================================================================
+
+-- ─── Identificación del proceso ───────────────────────────────────────────
+EXTRACT PUMPSRC
+
+-- ─── Credenciales de conexión (misma fuente) ──────────────────────────────
+USERIDALIAS gg_src_alias DOMAIN OracleGoldenGate
+
+-- ─── Definición del servidor destino ──────────────────────────────────────
+-- Dirección IP o hostname del servidor GoldenGate destino.
+-- TIMEOUT: segundos de espera antes de reintentar la conexión.
+RMTHOST gg-target-host.example.com, MGRPORT 7809, COMPRESS, TIMEOUT 30
+
+-- ─── Trail file remoto ────────────────────────────────────────────────────
+-- Ruta en el servidor destino donde el Manager recibirá los trails
+RMTTRAIL ./dirdat/rt
+
+-- ─── Tablas a pasar (deben coincidir con el Extract) ──────────────────────
+TABLE APP_OWNER.ORDERS;
+TABLE APP_OWNER.ORDER_ITEMS;
+TABLE APP_OWNER.CUSTOMERS;
+TABLE APP_OWNER.PRODUCTS;
+TABLE APP_OWNER.INVENTORY;
+
+-- ─── Parámetros de red opcionales ─────────────────────────────────────────
+-- Ajustar según el ancho de banda y latencia de la red
+-- TCPFLUSHBYTES 64000
+-- SOCKSENDBUF 512000
+-- SOCKSRECVBUF 512000
+
+-- ─── Gestión de errores ───────────────────────────────────────────────────
+REPERROR (DEFAULT, ABEND)

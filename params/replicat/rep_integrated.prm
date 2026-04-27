@@ -1,0 +1,53 @@
+-- ===========================================================================
+-- Archivo  : rep_integrated.prm
+-- Proceso  : REPLICAT integrado (Integrated Apply / Parallel Replicat)
+-- Propósito: Aplica los cambios en paralelo usando el mecanismo interno de
+--            apply de Oracle (Database In-Memory Apply). Ideal para alto
+--            volumen de transacciones. Requiere Oracle 12.2+.
+-- Uso      : ADD REPLICAT REPINT, INTEGRATED, EXTTRAIL ./dirdat/rt
+--          : ADD CHECKPOINTTABLE gg_apply.gg_chkpt
+-- ===========================================================================
+
+-- ─── Identificación del proceso ───────────────────────────────────────────
+REPLICAT REPINT
+
+-- ─── Credenciales de conexión al destino ─────────────────────────────────
+USERIDALIAS gg_tgt_alias DOMAIN OracleGoldenGate
+
+-- ─── Tabla de checkpoint ─────────────────────────────────────────────────
+CHECKPOINTTABLE gg_apply.gg_chkpt
+
+-- ─── Modo integrado: paralelismo ──────────────────────────────────────────
+-- Número de hilos de apply en paralelo (ajustar según CPUs disponibles)
+DBOPTIONS INTEGRATEDPARAMS (PARALLELISM 8)
+
+-- ─── Definición de tablas (estructura idéntica origen/destino) ────────────
+ASSUMETARGETDEFS
+
+-- ─── Mapeo de tablas ─────────────────────────────────────────────────────
+MAP APP_OWNER.ORDERS,       TARGET APP_OWNER.ORDERS;
+MAP APP_OWNER.ORDER_ITEMS,  TARGET APP_OWNER.ORDER_ITEMS;
+MAP APP_OWNER.CUSTOMERS,    TARGET APP_OWNER.CUSTOMERS;
+MAP APP_OWNER.PRODUCTS,     TARGET APP_OWNER.PRODUCTS;
+MAP APP_OWNER.INVENTORY,    TARGET APP_OWNER.INVENTORY;
+
+-- ─── Manejo de errores y conflictos ───────────────────────────────────────
+-- Estrategia CDR (Conflict Detection and Resolution): el más reciente gana
+-- MAP APP_OWNER.ORDERS, TARGET APP_OWNER.ORDERS,
+--     RESOLVECONFLICT (UPDATEROWEXISTS, (DEFAULT, USEMAX (LAST_UPDATED)));
+
+REPERROR (1403, DISCARD)
+REPERROR (DEFAULT, ABEND)
+DISCARDFILE ./dirrpt/repint.dsc, APPEND, MEGABYTES 500
+
+-- ─── Rendimiento ─────────────────────────────────────────────────────────
+GROUPTRANSOPS 5000
+
+-- ─── Heartbeat ────────────────────────────────────────────────────────────
+-- Habilitar la tabla de heartbeat para medir el lag extremo a extremo
+-- Requiere: ADD HEARTBEATTABLE (en el destino)
+-- MAP APP_OWNER.GGS_HEARTBEAT, TARGET APP_OWNER.GGS_HEARTBEAT;
+
+-- ─── Estadísticas ─────────────────────────────────────────────────────────
+REPORTCOUNT EVERY 30 MINUTES, RATE
+REPORTROLLOVER AT 00:00

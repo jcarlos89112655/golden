@@ -1,0 +1,53 @@
+-- ===========================================================================
+-- Archivo  : ext_integrated.prm
+-- Proceso  : EXTRACT integrado (Integrated Capture)
+-- Propósito: Captura de cambios mediante el servidor LogMiner interno de
+--            Oracle (12c+). Soporta CDB/PDB, compresión avanzada y tables
+--            particionadas. Requiere privilegio LOGMINING y registro previo
+--            del Extract: REGISTER EXTRACT <nombre> DATABASE
+-- Uso      : ADD EXTRACT EXTINT, INTEGRATED TRANLOG, BEGIN NOW
+-- ===========================================================================
+
+-- ─── Identificación del proceso ───────────────────────────────────────────
+EXTRACT EXTINT
+
+-- ─── Credenciales de conexión ─────────────────────────────────────────────
+USERIDALIAS gg_src_alias DOMAIN OracleGoldenGate
+
+-- ─── Trail file de salida (local) ─────────────────────────────────────────
+EXTTRAIL ./dirdat/it
+
+-- ─── Tablas a capturar ────────────────────────────────────────────────────
+TABLE APP_OWNER.ORDERS;
+TABLE APP_OWNER.ORDER_ITEMS;
+TABLE APP_OWNER.CUSTOMERS;
+TABLE APP_OWNER.PRODUCTS;
+TABLE APP_OWNER.INVENTORY;
+
+-- ─── Opciones específicas del modo integrado ──────────────────────────────
+-- Tiempo máximo de espera para obtener un slot de LogMiner (en segundos)
+TRANLOGOPTIONS INTEGRATEDPARAMS (MAX_SGA_SIZE 1024, PARALLELISM 4)
+
+-- Incluir todos los valores de columna en supplemental log
+LOGALLSUPCOLS
+
+-- ─── Soporte para CDB (Multitenant) ──────────────────────────────────────
+-- En modo CDB, el Extract se conecta al CDB$ROOT pero puede capturar PDBs.
+-- SOURCECATALOG <PDB_NAME>   ← descomentar y ajustar para PDB específica
+-- TABLE APP_OWNER.*;          ← captura todas las tablas del schema
+
+-- ─── Replicación de secuencias ────────────────────────────────────────────
+-- SEQUENCE APP_OWNER.*;
+
+-- ─── Parámetros de rendimiento ────────────────────────────────────────────
+CACHEMGR CACHESIZE 2048MB
+WARNLONGTRANS 60MINUTES, CHECKINTERVAL 15MINUTES
+
+-- ─── Manejo de DDL ────────────────────────────────────────────────────────
+-- DDL INCLUDE MAPPED OBJTYPE 'TABLE'
+
+-- ─── Gestión de errores ───────────────────────────────────────────────────
+REPERROR (DEFAULT, ABEND)
+
+-- ─── Heartbeat ────────────────────────────────────────────────────────────
+HEARTBEATTABLE APP_OWNER.GGS_HEARTBEAT
