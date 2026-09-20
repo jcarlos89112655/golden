@@ -175,12 +175,47 @@ Valyra, Arkadia, Nerva, Collimate y Synaptyx no son competencia: son **el primer
 
 ## 7. Mercado y clientes
 
-### Segmentos por orden de entrada
-1. **Integradores y fabricantes de drones ISR europeos** — venden a defensa y seguridad y necesitan diferenciarse en capacidad de enlace. Ciclo de venta medio, ticket de hardware.
-2. **Defensa y seguridad del Estado** — el enlace de baja probabilidad de detección es un requisito explícito, no una mejora. Ciclo largo, márgenes altos, y contexto presupuestario europeo favorable.
-3. **Protección civil, consorcios provinciales de bomberos y emergencias** — configuración B. Compra pública, ciclo lento, pero necesidad demostrada y presupuesto de resiliencia disponible tras la DANA.
-4. **Vigilancia de infraestructura crítica** — puertos, refinería, red eléctrica, plantas fotovoltaicas. PortCastelló ya ha ensayado drones para control y vigilancia portuaria: hay apetito local verificado.
-5. **Operadores de satélite y programas europeos** — configuración C, horizonte 2029+.
+### 7.1 Advertencia previa: la administración no es un buen primer cliente
+
+Conviene decirlo antes que nada, porque sostiene todo el orden de segmentos que sigue.
+
+**Evidencia de cómo compra realmente el sector público de emergencias:**
+
+- El **Consorcio Provincial de Bombers de València** mantiene abierta una licitación para el suministro de
+  «un dron, sus accesorios y sus cámaras», en singular, con plazo de ofertas en abril de 2026. Compra **unidades
+  sueltas de catálogo, por precio**. No compra desarrollo ni tecnología a TRL 5.
+- Donde sí hay volumen, la barrera de entrada es infranqueable para una empresa joven: la Generalitat licita la
+  extinción aérea de incendios forestales —7 aviones de carga en tierra, 2 anfibios y 1 de coordinación— por un
+  **valor estimado de 58,6 M€**, adjudicable solo a operadores aeronáuticos consolidados con flota, certificación
+  e historial.
+- El comprador está **fragmentado**: tres consorcios provinciales, la Generalitat, brigadas municipales y el Estado,
+  sin ventanilla única. Ciclos de 18 a 36 meses.
+
+**Conclusión operativa: una empresa en fase semilla no puede depender de un pedido público.** La emergencia es
+nuestro relato de misión y un segmento de madurez, no la línea de ingresos del año uno.
+
+**La distinción que sí importa:** el sector público es mal *cliente* a corto plazo, pero excelente *inversor*. El
+Plan Industrial y Tecnológico para la Seguridad y la Defensa, aprobado en abril de 2025, moviliza **10.471 M€ con
+foco explícito en tecnologías de doble uso** y prevé elevar la I+D+i estatal un 18 %. España alcanzó el **2 % del
+PIB en defensa en 2025 y lo mantiene en 2026**, con el **44,2 % del gasto dedicado a equipamiento**, quinto puesto
+de la OTAN: el incremento va a material y tecnología. El modelo correcto es **financiarse con inversión pública y
+facturar a integradores privados y a defensa**.
+
+### 7.2 Segmentos por orden de entrada
+
+| # | Cliente | Racional | Horizonte |
+|---|---|---|---|
+| 1 | **Integradores y fabricantes de drones ISR europeos** | Compran componente para diferenciar producto; ciclo comercial normal y ticket de hardware | Año 1 |
+| 2 | **Defensa y doble uso** | El enlace de baja probabilidad de detección es requisito, no mejora. Contexto presupuestario excepcional | Año 1–2 |
+| 3 | **Infraestructura crítica privada** | Puertos, refinería, red eléctrica, plantas fotovoltaicas. Capex privado y decisión rápida. PortCastelló ya ha ensayado drones para control y vigilancia portuaria | Año 2 |
+| 4 | **Operadores aeronáuticos de extinción** | **Vía de acceso al presupuesto público sin sufrir la compra pública**: el adjudicatario del contrato de 58,6 M€ integra nuestro equipo en su oferta para diferenciarse en la siguiente licitación. Decide como empresa privada | Año 2–3 |
+| 5 | **Protección civil y administración directa** | Solo con producto certificado e historial de servicio acumulado | Año 3+ |
+| 6 | **Operadores de satélite y programas europeos** | Configuración C | 2029+ |
+
+> **Regla de honestidad para la memoria:** declarar esta secuencia de forma explícita. «Nuestra misión es la
+> resiliencia de las comunicaciones en emergencia; nuestro ingreso del año uno procede de integradores de drones y
+> de defensa, porque el ciclo de compra pública no sostiene a una empresa en fase semilla.» Un evaluador que lee
+> esto ve criterio. Una proyección financiera con pedidos públicos imaginarios se detecta y descarta.
 
 ### Hipótesis de precio *(a validar en entrevistas)*
 - Terminal A: **25.000–60.000 €/unidad**, según capacidad y cualificación
@@ -268,7 +303,8 @@ La barrera de entrada no es la idea: es el **historial de vuelo demostrado** y, 
 | Meteorología: niebla y lluvia degradan el óptico | Media | Canal RF de respaldo con conmutación automática — es la recomendación explícita de la literatura del sector |
 | Entrada de un gran integrador en el nicho | Media | Velocidad, foco en plataforma pequeña, historial de vuelo acumulado |
 | 60 k€ no cubren salarios | Alta | Encadenar ENISA / Neotec desde el mes 6; NRE de cliente desde el mes 10 |
-| Ciclo de venta de defensa más largo de lo previsto | Media | Segmento 1 (integradores civiles) y 4 (infraestructura crítica) como puente de caja |
+| Ciclo de venta de defensa más largo de lo previsto | Media | Segmentos 1 y 3 (integradores civiles e infraestructura crítica) como puente de caja |
+| Dependencia de compra pública para facturar | **Alta** | Ningún ingreso del año 1 procede de administración. Acceso al presupuesto público vía operadores privados adjudicatarios (segmento 4) |
 | Deriva del relato hacia «radio de emergencias» y pérdida del requisito espacial | Alta | La capa troncal óptica encabeza siempre la memoria; la baja frecuencia se presenta como capa de cierre |
 | Eficiencia de antena inviable en la capa LF desde dron | Alta | Se declara como línea de I+D, no como producto comprometido; producto del año 1 es la capa VHF/UHF |
 
@@ -323,6 +359,13 @@ baja frecuencia atraviesa follaje y terreno pero entrega bits por segundo. Nuest
 traduce entre ambos regímenes. Y somos explícitos en el límite: por debajo de 30 MHz la ionosfera refleja la señal,
 así que la baja frecuencia nunca podrá ser el enlace espacial —solo la capa de cierre hacia las personas.
 
+**«¿De verdad va a comprar esto una administración?»**
+A corto plazo, no, y no lo planificamos así. Los consorcios de bomberos compran unidades de catálogo por precio, y
+los grandes contratos de medios aéreos solo son accesibles a operadores consolidados. Nuestro año uno factura a
+integradores de drones y a defensa. Al presupuesto público llegamos en año 2–3 por la puerta correcta: vendiendo al
+operador que sí gana esas licitaciones. Lo público es nuestro inversor —el Plan Industrial y Tecnológico de
+Seguridad y Defensa moviliza 10.471 M€ en doble uso—, no nuestro primer cliente.
+
 **«¿Qué pasa si hay nubes o niebla?»**
 Es la limitación conocida del óptico y por eso el sistema es híbrido con respaldo RF y conmutación automática. Y es, paradójicamente, nuestra tesis a largo plazo: volar por encima de la capa nubosa es precisamente lo que una estación fija no puede hacer.
 
@@ -337,6 +380,9 @@ Es la limitación conocida del óptico y por eso el sistema es híbrido con resp
 - DAS Photonics, spin-off del NTC-UPV — [UPV Innovación](https://innovacion.upv.es/empresas/das-photonics/)
 - Pruebas de dron para control y vigilancia portuaria — [PortCastelló](https://www.portcastello.com/en/communication/press-releases/2025/portcastello-carries-out-drone-flight-tests-for-port-control-and-surveillance/)
 - Operación BVLOS y categoría específica en España — [ENAIRE](https://www.enaire.es/servicios/drones/todo_lo_necesario_para_volar_tu_dron/como_volar_drones_en_espacio_aereo_no_controlado)
+- Plan Industrial y Tecnológico para la Seguridad y la Defensa, 10.471 M€ en doble uso — [La Moncloa](https://www.lamoncloa.gob.es/consejodeministros/resumenes/Documents/2025/230425-plan-industrial-y-tecnologico-para-la-seguridad-y-la-defensa.pdf)
+- España mantiene el 2 % del PIB en defensa en 2026 — [Euronews](https://es.euronews.com/2026/03/16/espana-mantendra-en-2026-el-gasto-en-defensa-del-2-por-ciento-del-pib)
+- Contratación del Consorci Provincial de Bombers de València — [bombersdv.es](https://www.bombersdv.es/es/category/contractacio-es/)
 - Red COMDES, TETRA 380–400 MHz, 206 estaciones base y 360 flotas — [Generalitat Valenciana](https://comdes.gva.es/es/la-red-comdes)
 - Comunicación a través del terreno (TTE): HeyPhone y Nicola a 87 kHz, Cave-Link 20–140 kHz — [Through-the-earth communications](https://en.wikipedia.org/wiki/Through-the-earth_mine_communications)
 - Atenuación por follaje y comparativa VHF/UHF — [Wireless Wave Attenuation in Forests: An Overview of Models, MDPI Forests](https://www.mdpi.com/1999-4907/15/9/1587)
