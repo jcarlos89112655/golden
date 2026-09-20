@@ -15,6 +15,8 @@ Desarrollamos **terminales de comunicación óptica en espacio libre (FSO) de ba
 
 Entramos al mercado por el enlace **dron → tierra** (vigilancia e ISR, donde el vídeo de alta resolución satura el espectro radioeléctrico disponible) y escalamos hacia el enlace **dron → satélite**, donde nuestra plataforma resuelve el problema estructural de las comunicaciones ópticas espaciales: **una nube corta el enlace, y un receptor que vuela por encima de la capa nubosa no**.
 
+El terminal óptico es la capa troncal de una **pasarela de comunicaciones de tres capas**: óptico para sacar el dato del incidente, VHF/UHF para dar cobertura sobre él, y baja frecuencia para alcanzar a quien está bajo dosel forestal, en barranco o sepultado. El dron traduce entre los tres regímenes.
+
 No fabricamos drones. Fabricamos la carga útil. Los fabricantes de drones son nuestros clientes, no nuestros competidores.
 
 **Nombres de trabajo:** *Aurea Photonics* · *Millars Optical* · *Nodo Aéreo Óptico (NAO)*
@@ -62,6 +64,73 @@ Terminal A + enlace satelital + célula de cobertura local. El dron sube sobre e
 Receptor óptico sobre plataforma que vuela por encima de la capa nubosa para recibir bajadas de satélite. Es la configuración que justifica la valoración a largo plazo y el encaje con IRIS² y EuroQCI.
 
 ---
+
+### 3.4 Arquitectura multibanda: por qué la baja frecuencia cierra el sistema
+
+El enlace óptico tiene capacidad enorme y una debilidad absoluta: exige línea de vista. Pero el problema operativo
+que resolvemos —equipos de intervención incomunicados— es, por definición, un problema de **ausencia** de línea de
+vista. La solución no es elegir una banda, es escalonarlas.
+
+| Capa | Banda | Capacidad | Función |
+|---|---|---|---|
+| **Troncal** | Óptico FSO / satcom | Gbps | Sacar el dato del incidente. **Sostiene el requisito de conexión espacial** |
+| **Área local** | VHF/UHF, interoperable con TETRA (380–400 MHz) | kbps–Mbps | Cobertura radioeléctrica sobre el incidente |
+| **Penetración** | HF / LF | bits por segundo | Alcanzar a quien está bajo dosel, en barranco o sepultado |
+
+#### Fundamento físico de la capa baja
+
+- **Penetración en terreno.** El efecto pelicular es inversamente proporcional a la frecuencia: VLF penetra decenas
+  de metros en roca o agua salada, mientras las frecuencias altas se extinguen de inmediato. Los sistemas de rescate
+  en cueva lo explotan: HeyPhone y Nicola operan en banda lateral única a 87 kHz; Cave-Link entre 20 y 140 kHz con
+  30 W según distancia. Tecnología de esta familia se empleó en el rescate de Tham Luang.
+- **Penetración en follaje.** Las hojas y ramas absorben más UHF que VHF, porque su tamaño físico se aproxima a la
+  longitud de onda de UHF. Un dosel denso es más hostil a UHF que a VHF, razón por la que los servicios forestales
+  han permanecido históricamente en VHF.
+
+#### El precio físico, reconocido explícitamente
+
+La resistencia de radiación de un dipolo escala con **(L/λ)²**. A 87 kHz la longitud de onda es de 3,4 km: una antena
+de 3 m montada en un dron es λ/1000, con eficiencia de radiación ínfima. **La capa baja entrega bits por segundo, no
+megabits**: posición, estado, recuento de personal y mensajería breve. No voz continua ni vídeo. Las vías conocidas
+—cable remolcado o bucle resonante sintonizado— penalizan el vuelo.
+
+**Clasificación honesta de madurez, que debe aparecer así en la memoria:**
+
+| Capa | Estado | Horizonte |
+|---|---|---|
+| Troncal óptica | Desarrollo, es el núcleo del proyecto | Meses 0–18 |
+| Repetidor VHF/UHF interoperable con TETRA | **Integración de componentes comerciales** | Meses 6–12, primer producto vendible |
+| Penetración LF/VLF desde plataforma aérea | **Línea de I+D, no producto comprometido** | Año 2–3 |
+
+#### El límite que no se negocia
+
+**Por debajo de ~30 MHz la ionosfera refleja la señal, no la deja pasar.** Ningún satélite puede recibir HF ni bandas
+inferiores; es el mismo fenómeno que hace que la HF rebote alrededor del planeta. El enlace satelital solo es posible
+de VHF/UHF hacia arriba (el IoT satelital vive en torno a 137–450 MHz). Por tanto **la baja frecuencia no sustituye
+nunca a la capa troncal**: la complementa por el extremo opuesto.
+
+> **Riesgo de posicionamiento.** Si el relato se desplaza hacia «radio de emergencias», se pierde el requisito
+> eliminatorio de conexión espacial. La capa troncal óptica y satelital debe seguir siendo la columna vertebral de
+> la memoria; la baja frecuencia entra como capa de cierre, no como producto principal.
+
+### 3.5 Cliente ancla identificado: la red COMDES
+
+La Generalitat opera **COMDES**, la red digital de comunicaciones móviles de emergencia y seguridad de la Comunitat
+Valenciana: 206 estaciones base, más del 98 % de cobertura territorial y 99,5 % de población, 17.712 usuarios de 360
+flotas —bomberos forestales, consorcios provinciales, 112CV, policías locales y protección civil de 289 municipios—
+sobre estándar TETRA en **banda UHF 380–400 MHz**.
+
+Dos consecuencias comerciales:
+
+1. La red de emergencias opera en la banda que **peor atraviesa el bosque denso**, y el porcentaje de territorio sin
+   cobertura se concentra previsiblemente en orografía cerrada: barranco, vaguada y monte. Es decir, donde arde y
+   donde inunda. *(Hipótesis a contrastar con el operador de la red antes de presentar.)*
+2. El cliente está **agrupado en una sola red, con presupuesto, y gestionado por la misma administración que
+   cofinancia la incubadora**. La interoperabilidad con TETRA deja de ser un requisito técnico y pasa a ser el
+   argumento comercial central.
+
+**Acción:** solicitar reunión con los responsables de COMDES para validar el hueco de cobertura y los requisitos de
+interoperabilidad. Es la entrevista de cliente de mayor valor de todo el plan.
 
 ## 4. Conexión con el sector espacial *(requisito eliminatorio de la convocatoria)*
 
@@ -185,6 +254,7 @@ La barrera de entrada no es la idea: es el **historial de vuelo demostrado** y, 
 | **Valyra Aerospace** (incubada) | Plataforma de vuelo, LOI, sinergia interna del programa | **Prioridad máxima** |
 | **Aerocas / ENAIRE** | Espacio aéreo de ensayo: el aeropuerto tiene espacio aéreo controlado con tráfico comercial residual | Por explorar — **no afirmar en la memoria como existente hasta confirmarlo** |
 | **PortCastelló** | Caso de uso de vigilancia de infraestructura, ya ha ensayado drones | Por contactar |
+| **Red COMDES (Generalitat)** | Cliente ancla: red TETRA de emergencias, 360 flotas. Valida el hueco de cobertura | **Prioridad alta** |
 | **ValSpace** | Consorcio espacial valenciano, prescripción ante el comité | Por contactar |
 
 ---
@@ -199,6 +269,8 @@ La barrera de entrada no es la idea: es el **historial de vuelo demostrado** y, 
 | Entrada de un gran integrador en el nicho | Media | Velocidad, foco en plataforma pequeña, historial de vuelo acumulado |
 | 60 k€ no cubren salarios | Alta | Encadenar ENISA / Neotec desde el mes 6; NRE de cliente desde el mes 10 |
 | Ciclo de venta de defensa más largo de lo previsto | Media | Segmento 1 (integradores civiles) y 4 (infraestructura crítica) como puente de caja |
+| Deriva del relato hacia «radio de emergencias» y pérdida del requisito espacial | Alta | La capa troncal óptica encabeza siempre la memoria; la baja frecuencia se presenta como capa de cierre |
+| Eficiencia de antena inviable en la capa LF desde dron | Alta | Se declara como línea de I+D, no como producto comprometido; producto del año 1 es la capa VHF/UHF |
 
 ---
 
@@ -245,6 +317,12 @@ El DLR ya demostró 1,25 Gbps desde un caza a Mach 0,7 con una arquitectura de d
 **«¿Por qué en Castellón y no en cualquier sitio?»**
 Por el Centro de Tecnología Nanofotónica de la UPV y por DAS Photonics, que ha metido fotónica en satélites de comunicaciones reales, ambos a menos de una hora. Por el espacio aéreo del propio aeropuerto para ensayos. Y porque Valyra, en esta misma incubadora, es plataforma de integración y primer cliente.
 
+**«¿Por qué baja frecuencia si su producto es óptico?»**
+Porque resuelven problemas opuestos y el sistema necesita ambos. El óptico da capacidad pero exige línea de vista; la
+baja frecuencia atraviesa follaje y terreno pero entrega bits por segundo. Nuestro valor está en la pasarela que
+traduce entre ambos regímenes. Y somos explícitos en el límite: por debajo de 30 MHz la ionosfera refleja la señal,
+así que la baja frecuencia nunca podrá ser el enlace espacial —solo la capa de cierre hacia las personas.
+
 **«¿Qué pasa si hay nubes o niebla?»**
 Es la limitación conocida del óptico y por eso el sistema es híbrido con respaldo RF y conmutación automática. Y es, paradójicamente, nuestra tesis a largo plazo: volar por encima de la capa nubosa es precisamente lo que una estación fija no puede hacer.
 
@@ -259,3 +337,6 @@ Es la limitación conocida del óptico y por eso el sistema es híbrido con resp
 - DAS Photonics, spin-off del NTC-UPV — [UPV Innovación](https://innovacion.upv.es/empresas/das-photonics/)
 - Pruebas de dron para control y vigilancia portuaria — [PortCastelló](https://www.portcastello.com/en/communication/press-releases/2025/portcastello-carries-out-drone-flight-tests-for-port-control-and-surveillance/)
 - Operación BVLOS y categoría específica en España — [ENAIRE](https://www.enaire.es/servicios/drones/todo_lo_necesario_para_volar_tu_dron/como_volar_drones_en_espacio_aereo_no_controlado)
+- Red COMDES, TETRA 380–400 MHz, 206 estaciones base y 360 flotas — [Generalitat Valenciana](https://comdes.gva.es/es/la-red-comdes)
+- Comunicación a través del terreno (TTE): HeyPhone y Nicola a 87 kHz, Cave-Link 20–140 kHz — [Through-the-earth communications](https://en.wikipedia.org/wiki/Through-the-earth_mine_communications)
+- Atenuación por follaje y comparativa VHF/UHF — [Wireless Wave Attenuation in Forests: An Overview of Models, MDPI Forests](https://www.mdpi.com/1999-4907/15/9/1587)
